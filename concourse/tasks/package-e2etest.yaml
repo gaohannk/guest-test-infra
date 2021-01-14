@@ -16,8 +16,7 @@ params:
   GOOGLE_APPLICATION_CREDENTIALS: "credentials/credentials.json"
 
 run:
-  path: sh
+  path:  ./wrapper
   args:
-  - -exc
-  - |
-    ./wrapper ./e2e_tests
+  - ./e2e_tests
+   
