@@ -28,8 +28,8 @@ resources:
 - name: guest-test-infra
   type: git
   source:
-    uri: https://github.com/GoogleCloudPlatform/guest-test-infra.git
-    branch: master
+    uri: https://github.com/gaohannk/guest-test-infra.git
+    branch: add-test-job-in-pipeline
 
 jobs:
 - name: guest-agent-integration-test
@@ -48,10 +48,45 @@ jobs:
       repo-name: "guest-agent"
       timestamp: ((.:timestamp))
 
-- name: build-guest-agent
+- name: guest-agent-e2e-test
   plan:
   - get: guest-agent
     passed: [guest-agent-integration-test]
+    trigger: true
+    params:
+      skip_download: "true"
+  - get: guest-test-infra
+  - task: get-credential
+    file: guest-test-infra/concourse/tasks/get-credential.yaml
+  - task: generate-timestamp
+    file: guest-test-infra/concourse/tasks/generate-timestamp.yaml
+  - load_var: timestamp
+    file: timestamp/timestamp
+  - task: guest-agent-integration-test
+    file: guest-test-infra/concourse/tasks/package-e2etest.yaml
+    vars:
+      repo-name: "guest-agent"
+      timestamp: ((.:timestamp))
+
+- name: osconfig-e2e-test
+  plan:
+  - get: osconfig
+  - get: guest-test-infra
+  - task: get-credential
+    file: guest-test-infra/concourse/tasks/get-credential.yaml
+  - task: generate-timestamp
+    file: guest-test-infra/concourse/tasks/generate-timestamp.yaml
+  - load_var: timestamp
+    file: timestamp/timestamp
+  - task: osconfig-e2e-test
+    file: guest-test-infra/concourse/tasks/package-e2etest.yaml
+    vars:
+      repo-name: "osconfig"
+      timestamp: ((.:timestamp))
+- name: build-guest-agent
+  plan:
+  - get: guest-agent
+    passed: [guest-agent-e2e-test]
     trigger: true
     params:
       skip_download: "true"
@@ -171,6 +206,7 @@ jobs:
 - name: build-osconfig
   plan:
   - get: osconfig
+    passed: [osconfig-e2e-test]
     trigger: true
     params:
       skip_download: "true"
