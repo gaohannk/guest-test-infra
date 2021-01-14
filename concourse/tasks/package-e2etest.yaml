@@ -3,7 +3,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: gcr.io/compute-image-tools-test/((repo-name))-tests
+    repository: gcr.io/compute-image-tools-test/((image-name))
     tag: latest
     username: _json_key
     password: ((concourse-sa.credential))
@@ -16,7 +16,5 @@ params:
   GOOGLE_APPLICATION_CREDENTIALS: "credentials/credentials.json"
 
 run:
-  path:  ./wrapper
+  path: ./main
   args:
-  - ./e2e_tests
-   
