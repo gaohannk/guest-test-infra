@@ -5,6 +5,8 @@ image_resource:
   source:
     repository: gcr.io/compute-image-tools-test/((repo-name))-tests
     tag: latest
+    username: _json_key
+    password: ((concourse-sa.credential))
 
 inputs:
 - name: credentials
