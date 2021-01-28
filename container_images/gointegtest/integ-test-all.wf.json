@@ -6,7 +6,7 @@
   },
   "Vars": {
     "repo_owner": {
-      "Value": "GoogleCloudPlatform",
+      "Value": "gaohannk",
       "Description": "GitHub repo owner or organization"
     },
     "repo_name": {
@@ -14,7 +14,7 @@
       "Required": true
     },
     "git_ref": {
-      "Value": "master",
+      "Value": "cicd-test",
       "Description": "Git ref to check out and build"
     },
     "gcs_path": {
