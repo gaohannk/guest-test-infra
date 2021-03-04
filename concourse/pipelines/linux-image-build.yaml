@@ -15,8 +15,8 @@ resources:
 - name: guest-test-infra
   type: git
   source:
-    uri: https://github.com/GoogleCloudPlatform/guest-test-infra.git
-    branch: master
+    uri: https://github.com/gaohannk/guest-test-infra.git
+    branch: e2e-test-concourse-test
 - name: centos-7-gcs
   type: gcs
   source:
@@ -527,6 +527,35 @@ jobs:
       gcs_url: ((.:gcs-url))
       google_cloud_repo: "stable"
       build_date: ((.:build-date))
+# Image E2E test
+# centos
+- name: e2e-test-centos-7
+  plan:
+  - get: guest-test-infra
+  - get: compute-image-tools
+  - get: centos-7-gcs
+    passed: [build-centos-7]
+    trigger: false
+    params:
+      skip_download: "true"
+  - load_var: source-version
+    file: centos-7-gcs/version
+  - load_var: gcs-url
+    file: centos-7-gcs/url
+  - task: get-credential
+    file: guest-test-infra/concourse/tasks/get-credential.yaml
+  - task: e2e-test-centos-7
+    file: guest-test-infra/concourse/tasks/image-e2etest.yaml
+    vars:
+      workProject: "gcp-guest"
+      tarballPath: ((.:gcs-url))
+      testName: "test1,test2,test3"
+      testBinaryPath: "path1, path2, path3"
+  - task: validate-e2etest-result-centos-7
+    file: guest-test-infra/concourse/tasks/validate-image-e2etest-result.yaml
+    vars:
+      key: "value"
+
 
 # Publish to testing
 # centos
@@ -535,7 +564,7 @@ jobs:
   - get: guest-test-infra
   - get: compute-image-tools
   - get: centos-7-gcs
-    passed: [build-centos-7]
+    passed: [e2e-test-centos-7]
     trigger: false
     params:
       skip_download: "true"

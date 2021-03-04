@@ -1,0 +1,25 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: gcr.io/gcp-guest/goe2etest
+    tag: latest
+
+inputs:
+- name: credentials
+- name: guest-test-infra
+
+
+params:
+  GOOGLE_APPLICATION_CREDENTIALS: "credentials/credentials.json"
+
+run:
+  path: /test_manager_startup
+  args:
+  - -workProject=((workProject))
+  - -tarballPath=((tarballPath))
+  - -testName=((testName))
+  - -testBinaryPath=((testBinaryPath))
+
+
