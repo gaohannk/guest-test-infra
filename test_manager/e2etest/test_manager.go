@@ -64,6 +64,7 @@ func createWorkflow(workProject string, iTest *ImageTest) (*daisy.Workflow, erro
 	w.Name = "e2e-test-" + randString(5)
 	w.Project = workProject
 	w.Sources["startup_script"] = "bootstrap.sh"
+	w.Sources["test_wrapper.sh"] = "test_wrapper.sh"
 
 	var err error
 	if iTest.TarBallPath != "" {
@@ -171,7 +172,8 @@ func createInstances(workProject, diskName, instanceName, testBinaryPath string)
 		},
 		Metadata: map[string]string{
 			// Test binary used in test wrapper to identify which test to run
-			"test-binary-path": testBinaryPath,
+			"test_binary_path": testBinaryPath,
+			"files_gcs_dir": "${SOURCESPATH}",
 		},
 	}
 	cins := &daisy.CreateInstances{Instances: []*daisy.Instance{&cin}}
