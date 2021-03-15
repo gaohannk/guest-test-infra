@@ -64,7 +64,6 @@ func createWorkflow(workProject string, iTest *ImageTest) (*daisy.Workflow, erro
 	w.Name = "e2e-test-" + randString(5)
 	w.Project = workProject
 	w.Sources["startup_script"] = "bootstrap.sh"
-	fmt.Printf("my Itest %+v\n", iTest)
 
 	var err error
 	if iTest.TarBallPath != "" {
@@ -155,11 +154,6 @@ func getSourceImageReference(imageName, imageProject string, isNewImage bool) st
 }
 
 func createInstances(workProject, diskName, instanceName, testBinaryPath string) *daisy.CreateInstances {
-	//b, err := ioutil.ReadFile("bootstrap.sh")
-	//if err != nil {
-	//	return nil
-	//}
-	//startupScriptContent := string(b)
 	cin := daisy.Instance{
 		Instance: compute.Instance{
 			Name: instanceName,
