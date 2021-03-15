@@ -3,7 +3,6 @@ package e2etest
 import (
 	"context"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"time"
 
@@ -30,7 +29,7 @@ type ImageTest struct {
 	ImageName    string
 	ImageFamily  string
 	ImageProject string
-
+	// Pass to instance metadata
 	TestBinaryPath string
 }
 
@@ -38,7 +37,7 @@ func (t *E2ETest) CreateWorkflows(ctx context.Context) ([]*daisy.Workflow, error
 	var ws []*daisy.Workflow
 	for _, it := range t.ImageTests {
 		fmt.Printf("Creating E2E Testing Workflows\n")
-		w, err := createWorkflow(ctx, t.WorkProject, it)
+		w, err := createWorkflow(t.WorkProject, it)
 		if err != nil {
 			return nil, err
 		}
@@ -54,17 +53,18 @@ func (t *E2ETest) CreateWorkflows(ctx context.Context) ([]*daisy.Workflow, error
 		if w == nil {
 			continue
 		}
-		//fmt.Printf("workflow step info %s", w.Steps["create-instance"])
 		ws = append(ws, w)
 	}
 	return ws, nil
 }
 
 // To test a new candidate image, using createNewImageTestWorkfow. To test prod images using createExistImageTestWorkflow
-func createWorkflow(ctx context.Context, workProject string, iTest *ImageTest) (*daisy.Workflow, error) {
+func createWorkflow(workProject string, iTest *ImageTest) (*daisy.Workflow, error) {
 	w := daisy.New()
 	w.Name = "e2e-test-" + randString(5)
 	w.Project = workProject
+	w.Sources["startup_script"] = "bootstrap.sh"
+	fmt.Printf("my Itest %+v\n", iTest)
 
 	var err error
 	if iTest.TarBallPath != "" {
@@ -129,7 +129,7 @@ func createDisks(imageName, workProject, imageProject, diskName string, isNewIma
 		Disk: compute.Disk{
 			Name:        diskName,
 			Zone:        workZone,
-			SourceImage: getSourceImageReference(imageName, isNewImage, imageProject),
+			SourceImage: getSourceImageReference(imageName, imageProject, isNewImage),
 		},
 		Resource: daisy.Resource{
 			Project: workProject,
@@ -142,7 +142,7 @@ func createDisks(imageName, workProject, imageProject, diskName string, isNewIma
 	return cds
 }
 
-func getSourceImageReference(imageName string, isNewImage bool, imageProject string) string {
+func getSourceImageReference(imageName, imageProject string, isNewImage bool) string {
 	var sourceImage string
 	if isNewImage {
 		// reference the new image created in last step
@@ -155,11 +155,11 @@ func getSourceImageReference(imageName string, isNewImage bool, imageProject str
 }
 
 func createInstances(workProject, diskName, instanceName, testBinaryPath string) *daisy.CreateInstances {
-	b, err := ioutil.ReadFile("bootstrap.sh")
-	if err != nil {
-		return nil
-	}
-	startupScriptContent := string(b)
+	//b, err := ioutil.ReadFile("bootstrap.sh")
+	//if err != nil {
+	//	return nil
+	//}
+	//startupScriptContent := string(b)
 	cin := daisy.Instance{
 		Instance: compute.Instance{
 			Name: instanceName,
@@ -172,10 +172,10 @@ func createInstances(workProject, diskName, instanceName, testBinaryPath string)
 			Resource: daisy.Resource{
 				Project: workProject,
 			},
+			// Bootstrap script to download test wrapper
+			StartupScript: "startup_script",
 		},
 		Metadata: map[string]string{
-			// Bootstrap script to download test wrapper
-			"startup-script": startupScriptContent,
 			// Test binary used in test wrapper to identify which test to run
 			"test-binary-path": testBinaryPath,
 		},

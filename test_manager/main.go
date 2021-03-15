@@ -27,19 +27,24 @@ var (
 
 func main() {
 	flag.Parse()
-	var imageTests []*e2etest.ImageTest
-	imageTests = parseImageTestArg(imageTests)
+
+	if *tarballPath != "" && *imageName != "" {
+		fmt.Println("Cannot set both -tarball_path and -image_name")
+		os.Exit(1)
+	}
+
+	imageTests := parseImageTestArg()
 	e2eTest := e2etest.E2ETest{
 		WorkProject: *workProject,
 		GcsPath:     *gcsPath,
 		ImageTests:  imageTests,
 	}
 
+	var ws []*daisy.Workflow
 	var errs []error
 	var err error
 
 	ctx := context.Background()
-	var ws []*daisy.Workflow
 	ws, err = e2eTest.CreateWorkflows(ctx)
 	if err != nil {
 		createWorkflowErr := fmt.Errorf("workflow creation error: %s", err)
@@ -97,23 +102,24 @@ func checkError(errors chan error) {
 		return
 	}
 }
-func parseImageTestArg(imageTests []*e2etest.ImageTest) []*e2etest.ImageTest {
-	tarballPaths := strings.Split(*tarballPath, ",")
-	testNames := strings.Split(*testName, ",")
-	imageNames := strings.Split(*imageName, ",")
-	imageProjects := strings.Split(*imageProject, ",")
+func parseImageTestArg() []*e2etest.ImageTest {
+	var imageTests []*e2etest.ImageTest
+	tarballPath := strings.Split(*tarballPath, ",")
+	testName := strings.Split(*testName, ",")
+	imageName := strings.Split(*imageName, ",")
+	imageProject := strings.Split(*imageProject, ",")
 	imageFamily := strings.Split(*imageFamily, ",")
-	testBinaryPaths := strings.Split(*testBinaryPath, ",")
-	for idx, testName := range testNames {
-		var imageTest = e2etest.ImageTest{
-			testName,
-			tarballPaths[idx],
-			imageNames[idx],
+	testBinaryPath := strings.Split(*testBinaryPath, ",")
+	for idx, _ := range imageName {
+		var imageTest = &e2etest.ImageTest{
+			testName[idx],
+			tarballPath[idx],
+			imageName[idx],
 			imageFamily[idx],
-			imageProjects[idx],
-			testBinaryPaths[idx],
+			imageProject[idx],
+			testBinaryPath[idx],
 		}
-		imageTests = append(imageTests, &imageTest)
+		imageTests = append(imageTests, imageTest)
 	}
 	return imageTests
 }
