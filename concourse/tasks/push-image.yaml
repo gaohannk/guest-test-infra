@@ -1,0 +1,26 @@
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: amidos/dcind
+    tag: latest
+
+inputs:
+- name: image-tar
+- name: credentials
+
+params:
+  GOOGLE_APPLICATION_CREDENTIALS: credentials/credentials.json
+
+run:
+  path: sh
+  args:
+  - -exc
+  - |
+    source /docker-lib.sh
+    start_docker
+    cat credentials/credentials.json | docker login -u _json_key --password-stdin https://gcr.io
+    docker load --input image-tar/image.tar.gz
+    docker tag image ((gcr-path))
+    docker push ((gcr-path))
