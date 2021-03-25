@@ -3,7 +3,7 @@ resources:
   type: git
   source:
     uri: https://github.com/gaohannk/guest-test-infra.git
-    branch: test_manager_container
+    branch: test_manager_container_test
 
 jobs:
 - name: "build-test-manager-container"

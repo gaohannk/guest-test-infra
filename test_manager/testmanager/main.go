@@ -1,4 +1,4 @@
-package test_manager
+package testmanager
 
 import "fmt"
 
