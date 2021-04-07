@@ -13,12 +13,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-export CGO_ENABLED=0 GOOS=linux
-BUILD_DIR=./test_manager
-cd $BUILD_DIR
-mkdir /out
+set -e
 
-GOBUILD_OUT=0
+export CGO_ENABLED=0 GOOS=linux
+cd test_manager
+mkdir /out
 
 echo "Start Building"
 cd ./testmanager
@@ -30,10 +29,9 @@ go get && go build -v -o /out/test_wrapper
 echo "go build exited with $?"
 cd ..
 
-
-for test_suite in ./test_suites/*; do
-  test_suite=`basename ${test_suite}`
-  go test -c ./test_suites/${test_suite} -o /out/${test_suite}.test
+cd ./test_suites
+for test_suite in *; do
+  go test -c ./${test_suite} -o /out/${test_suite}.test
   echo "go test -c exited with $?"
 done
 
@@ -42,4 +40,3 @@ ls /out
 
 sync
 echo "Finish Building"
-exit $GOBUILD_OUT
