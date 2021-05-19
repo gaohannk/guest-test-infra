@@ -11,12 +11,12 @@ resources:
   type: git
   source:
     uri: https://github.com/GoogleCloudPlatform/compute-image-tools.git
-    branch: master
+    branch: main
 - name: guest-test-infra
   type: git
   source:
     uri: https://github.com/GoogleCloudPlatform/guest-test-infra.git
-    branch: master
+    branch: main
 - name: almalinux-8-gcs
   type: gcs
   source:
