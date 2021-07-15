@@ -4,6 +4,7 @@ import (
 	"io/ioutil"
 	"strings"
 	"testing"
+	"time"
 )
 
 const shutdownTime = 110 // about 2 minutes
@@ -19,4 +20,8 @@ func TestGuestShutdownScript(t *testing.T) {
 	if len(lines) < shutdownTime {
 		t.Fatalf("shut down time less than %d seconds.", shutdownTime)
 	}
+}
+
+func TestStartAndImmediateShutdown(t *testing.T) {
+	time.Sleep(5 * time.Second)
 }

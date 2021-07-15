@@ -156,3 +156,11 @@ func (t *TestVM) EnableSecureBoot() {
 		}
 	}
 }
+
+func (t *TestVM) Shutdown() error {
+	_, err := t.testWorkflow.addStopStep(t.name, t.name)
+	if err != nil {
+		return err
+	}
+	return nil
+}
