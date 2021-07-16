@@ -54,11 +54,7 @@ func TestSSH(t *testing.T) {
 	}
 }
 
-func createSession(user, host, keyPath string) (*ssh.Client, *ssh.Session, error) {
-	pembytes, err := downloadPrivateKey(keyPath)
-	if err != nil {
-		panic(err)
-	}
+func createSession(user, host string, pembytes []byte) (*ssh.Client, *ssh.Session, error) {
 	// generate signer instance from plain key
 	signer, err := ssh.ParsePrivateKey(pembytes)
 	if err != nil {
