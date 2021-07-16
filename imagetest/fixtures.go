@@ -205,9 +205,6 @@ func (t *TestVM) AddAliasIPRanges(aliasIPRange, rangeName string) {
 // AddTestUser generate ssh key pair and return public key.
 func (t *TestVM) AddTestUser() ([]byte, error) {
 	keyFileName := t.testWorkflow.setKeyFileName()
-	if keyFileName == "" {
-		return nil, fmt.Errorf("no key file found for user")
-	}
 	commandArgs := []string{"-t", "rsa", "-f", keyFileName, "-N", "", "-q"}
 	cmd := exec.Command("ssh-keygen", commandArgs...)
 	if err := cmd.Run(); err != nil {
