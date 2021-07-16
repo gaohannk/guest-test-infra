@@ -42,7 +42,11 @@ func TestSSH(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Couldn't get key path from metadata: %v", err)
 	}
-	client, session, err := createSession(user, fmt.Sprintf("%s:22", vmname), keyURL)
+	pembytes, err := downloadPrivateKey(keyURL)
+	if err != nil {
+		t.Fatalf("failed to download private key: %v", err)
+	}
+	client, session, err := createSession(user, fmt.Sprintf("%s:22", vmname), keydata)
 	if err != nil {
 		t.Fatalf("user %s failed ssh to target host, %s, err %v", user, vmname, err)
 	}
