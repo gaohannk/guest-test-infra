@@ -398,7 +398,7 @@ func finalizeWorkflows(tests []*TestWorkflow, zone, project, bucket string) erro
 }
 
 func (t *TestWorkflow) setKeyFileName() string {
-	keyFileName := "id_rsa_" + uuid.New().String()
+	keyFileName := "/id_rsa_" + uuid.New().String()
 	t.wf.Sources["ssh-key"] = keyFileName
 	return keyFileName
 }
