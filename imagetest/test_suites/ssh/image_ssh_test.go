@@ -37,7 +37,7 @@ func TestEmptyTest(t *testing.T) {
 func TestSSH(t *testing.T) {
 	vmname, err := utils.GetRealVMName("vm2")
 	if err != nil {
-		t.Fatal("failed to get real vm name")
+		t.Fatalf("failed to get real vm name: %v", err)
 	}
 	keyURL, err := utils.GetMetadataAttribute("_ssh_key_url")
 	if err != nil {
