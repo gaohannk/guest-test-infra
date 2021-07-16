@@ -41,7 +41,7 @@ func TestSSH(t *testing.T) {
 	}
 	keyURL, err := utils.GetMetadataAttribute("_ssh_key_url")
 	if err != nil {
-		t.Fatalf("Couldn't get key path from metadata")
+		t.Fatalf("Couldn't get key path from metadata: %v", err)
 	}
 	client, session, err := createSession(user, fmt.Sprintf("%s:22", vmname), keyURL)
 	if err != nil {
