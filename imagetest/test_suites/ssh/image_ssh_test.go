@@ -51,7 +51,7 @@ func TestSSH(t *testing.T) {
 		t.Fatal("failed to run cmd hostname")
 	}
 	if err := client.Close(); err != nil {
-		t.Log("failed to close client")
+		t.Logf("failed to close client: %v", err)
 	}
 }
 
