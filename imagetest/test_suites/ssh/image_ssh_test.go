@@ -89,7 +89,7 @@ func downloadPrivateKey(gcsPath string) ([]byte, error) {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
-		log.Fatalf("failed to create cloud storage client: %v", err)
+		return nil, err
 	}
 	privateKey, err := utils.DownloadGCSObject(ctx, client, gcsPath)
 	if err != nil {
